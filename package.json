@@ -1,0 +1,26 @@
+{
+  "name": "@livequery/postgres-mapper",
+  "version": "1.0.1",
+  "type": "module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "build/**/*"
+  ],
+  "dependencies": {
+    "@types/pg": "^8.10.2",
+    "pg": "^8.11.2",
+    "pg-logical-replication": "^2.0.3",
+    "pgwire": "^0.6.0",
+    "rxjs": "^7.8.1"
+  },
+  "scripts": {
+    "dev": "clear; node --no-warnings --es-module-specifier-resolution=node --experimental-specifier-resolution=node --loader ts-node/esm ",
+    "build": "tsc -v; rm -rf build && tsc -b tsconfig.json"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}
