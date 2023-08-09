@@ -27,6 +27,11 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@livequery/types@1.0.77":
+  version "1.0.77"
+  resolved "https://registry.yarnpkg.com/@livequery/types/-/types-1.0.77.tgz#95cff11a3526e4e62b30d341022ce5b7945c39f8"
+  integrity sha512-SvyS6zAcFM4QzMVRh2azODGbHZe7iQFNtL1P8TtwOP+7CP3WrmEx66ML0c6LJ2e4vvCkuv+qWJEFiz74sVxygQ==
+
 "@tsconfig/node10@^1.0.7":
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/@tsconfig/node10/-/node10-1.0.9.tgz#df4907fc07a886922637b15e02d4cebc4c0021b2"

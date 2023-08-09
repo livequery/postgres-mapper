@@ -5,6 +5,7 @@ import {
     PgoutputPlugin
 } from 'pg-logical-replication'
 import pg from 'pg'
+import { LivequeryBaseEntity } from '@livequery/types'
 
 
 export type LogData<T = {}> = {
@@ -45,7 +46,7 @@ async function tryCatch<T>(fn: Promise<T> | (() => Promise<T>)) {
     }
 }
 
-export const listenPostgresDataChange = <T>(config: pg.ClientConfig) => new Observable<DatabaseEvent<T>>(o => {
+export const listenPostgresDataChange = <T extends LivequeryBaseEntity = LivequeryBaseEntity>(config: pg.ClientConfig) => new Observable<DatabaseEvent<T>>(o => {
 
     const callback = new ReplaySubject<Function>()
 
@@ -57,6 +58,12 @@ export const listenPostgresDataChange = <T>(config: pg.ClientConfig) => new Obse
 
         await tryCatch(client.query(`CREATE PUBLICATION ${PUBLICATION} FOR ALL TABLES`))
         await tryCatch(client.query(`SELECT pg_create_logical_replication_slot('${SLOT_NAME}','pgoutput')`))
+
+        // Set full replica
+        const [, result] = await tryCatch<pg.QueryResult<{ tablename: string }>>(client.query(`SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public'`))
+        for (const { tablename } of result?.rows || []) {
+            await client.query(`ALTER TABLE "${tablename}" REPLICA IDENTITY FULL`)
+        }
 
         const service = new LogicalReplicationService(config, {
             acknowledge: {
