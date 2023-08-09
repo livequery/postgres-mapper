@@ -26,8 +26,8 @@ export type LogData<T = {}> = {
 export type DatabaseEvent<T> = {
     table: string
     type: 'added' | 'modified' | 'removed',
-    data: Partial<T>,
-    old_data: T
+    new_data?: Partial<T>,
+    old_data?: T
 }
 
 
@@ -45,7 +45,7 @@ async function tryCatch<T>(fn: Promise<T> | (() => Promise<T>)) {
     }
 }
 
-export const listenPostgresDataChange = (config: pg.ClientConfig) => new Observable<DatabaseEvent<{}>>(o => {
+export const listenPostgresDataChange = <T>(config: pg.ClientConfig) => new Observable<DatabaseEvent<T>>(o => {
 
     const callback = new ReplaySubject<Function>()
 
@@ -57,7 +57,7 @@ export const listenPostgresDataChange = (config: pg.ClientConfig) => new Observa
 
         await tryCatch(client.query(`CREATE PUBLICATION ${PUBLICATION} FOR ALL TABLES`))
         await tryCatch(client.query(`SELECT pg_create_logical_replication_slot('${SLOT_NAME}','pgoutput')`))
- 
+
         const service = new LogicalReplicationService(config, {
             acknowledge: {
                 auto: true,
@@ -78,8 +78,8 @@ export const listenPostgresDataChange = (config: pg.ClientConfig) => new Observa
             }
         })
 
-        const subscription = new Observable<{ lsn: string, log: LogData }>(o => {
-            const fn = (lsn: string, log: LogData) => o.next({ log, lsn })
+        const subscription = new Observable<{ lsn: string, log: LogData<T> }>(o => {
+            const fn = (lsn: string, log: LogData<T>) => o.next({ log, lsn })
             service.on('data', fn)
             return () => service.removeListener('data', fn)
         }).pipe(
@@ -91,7 +91,7 @@ export const listenPostgresDataChange = (config: pg.ClientConfig) => new Observa
                 }
                 const type = tag_mapping[log.tag]
                 log.relation && type && o.next({
-                    data: log.new,
+                    new_data: log.new,
                     old_data: log.old,
                     table: log.relation?.name,
                     type
