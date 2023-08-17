@@ -5,7 +5,7 @@ import {
     PgoutputPlugin
 } from 'pg-logical-replication'
 import pg from 'pg'
-import { LivequeryBaseEntity } from '@livequery/types'
+import { LivequeryBaseEntity, DatabaseEvent } from '@livequery/types'
 
 
 export type LogData<T = {}> = {
@@ -21,14 +21,6 @@ export type LogData<T = {}> = {
     old: T,
     new: T,
 
-}
-
-
-export type DatabaseEvent<T> = {
-    table: string
-    type: 'added' | 'modified' | 'removed',
-    new_data?: Partial<T>,
-    old_data?: T
 }
 
 
@@ -56,6 +48,7 @@ export const listenPostgresDataChange = <T extends LivequeryBaseEntity = Liveque
         const client = new pg.Client(config)
         await client.connect()
 
+        await tryCatch(client.query(`ALTER SYSTEM SET wal_level TO logical;`))
         await tryCatch(client.query(`CREATE PUBLICATION ${PUBLICATION} FOR ALL TABLES`))
         await tryCatch(client.query(`SELECT pg_create_logical_replication_slot('${SLOT_NAME}','pgoutput')`))
 

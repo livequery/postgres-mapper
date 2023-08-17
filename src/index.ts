@@ -1,1 +1,1 @@
-export { listenPostgresDataChange, DatabaseEvent, LogData } from './MongodbRealtimeMapper.js'
+export { listenPostgresDataChange, LogData } from './PostgresRealtimeMapper.js'

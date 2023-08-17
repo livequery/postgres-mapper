@@ -1,6 +1,6 @@
 {
   "name": "@livequery/postgres-mapper",
-  "version": "1.0.77",
+  "version": "1.0.79",
   "type": "module",
   "author": "Duong Van Ba",
   "description": "Postgres realtime mapper for @livequery ecosystem",
@@ -35,6 +35,6 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@livequery/types": "1.0.77"
+    "@livequery/types": "1.0.79"
   }
 }
