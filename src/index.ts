@@ -1,1 +1,1 @@
-export { listenPostgresDataChange, LogData } from './PostgresRealtimeMapper.js'
+export { listenPostgresDataChange, LogData } from './PostgresRealtimeMapper.js' 

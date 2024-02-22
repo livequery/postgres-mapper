@@ -26,7 +26,6 @@ export type LogData<T = {}> = {
 
 
 const PUBLICATION = 'prp'
-const SLOT_NAME = 'prs'
 
 
 async function tryCatch<T>(fn: Promise<T> | (() => Promise<T>)) {
@@ -44,12 +43,14 @@ export const listenPostgresDataChange = <T extends LivequeryBaseEntity = Liveque
 
     setTimeout(async () => {
 
+        const SLOT_NAME = Date.now().toString(36)
+
 
         const client = new pg.Client(config)
         await client.connect()
 
         await tryCatch(client.query(`ALTER SYSTEM SET wal_level TO logical;`))
-        await tryCatch(client.query(`CREATE PUBLICATION ${PUBLICATION} FOR ALL TABLES`))
+        await tryCatch(client.query(`CREATE PUBLICATION IF NOT EXISTS ${PUBLICATION} FOR ALL TABLES`))
         await tryCatch(client.query(`SELECT pg_create_logical_replication_slot('${SLOT_NAME}','pgoutput')`))
 
         // Set full replica
