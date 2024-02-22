@@ -26,6 +26,7 @@ export type LogData<T = {}> = {
 
 
 const PUBLICATION = 'prp'
+const SLOT_NAME = process.env.POSTGRES_REPLICATION_SLOT_NAME || 'prsn'
 
 
 async function tryCatch<T>(fn: Promise<T> | (() => Promise<T>)) {
@@ -43,7 +44,7 @@ export const listenPostgresDataChange = <T extends LivequeryBaseEntity = Liveque
 
     setTimeout(async () => {
 
-        const SLOT_NAME = Date.now().toString(36)
+
 
 
         const client = new pg.Client(config)
