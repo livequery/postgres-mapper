@@ -51,7 +51,7 @@ export const listenPostgresDataChange = <T extends LivequeryBaseEntity = Liveque
         await client.connect()
 
         await tryCatch(client.query(`ALTER SYSTEM SET wal_level TO logical;`))
-        await tryCatch(client.query(`CREATE PUBLICATION IF NOT EXISTS ${PUBLICATION} FOR ALL TABLES`)) 
+        await tryCatch(client.query(`CREATE PUBLICATION ${PUBLICATION} FOR ALL TABLES`)) 
         await tryCatch(client.query(`SELECT pg_drop_replication_slot(slot_name) FROM pg_replication_slots where active is false`)); 
         await new Promise(s => setTimeout(s, 2000))
         await tryCatch(client.query(`SELECT pg_create_logical_replication_slot('${SLOT_NAME}','pgoutput')`))
@@ -78,7 +78,7 @@ export const listenPostgresDataChange = <T extends LivequeryBaseEntity = Liveque
             while (true) {
                 const [error] = await tryCatch(service.subscribe(plugin, SLOT_NAME))
                 console.error(error)
-                await new Promise(s => setTimeout(s, 100))
+                await new Promise(s => setTimeout(s, 5000))
             }
         })
 
